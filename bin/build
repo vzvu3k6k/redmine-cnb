@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+echo "---> Redmine Buildpack"
+
+layers_dir=$1
+plan_path=$3
+
+mkdir /tmp/overlay
+mv * /tmp/overlay
+
+REDMINE_VERSION=$(cat .redmine-version)
+
+echo "---> Downloading and extracting Redmine"
+wget -q -O - "https://github.com/redmine/redmine/archive/${REDMINE_VERSION}.tar.gz" | tar -xzf - --strip 1
+
+rsync -a /tmp/overlay/ .
+
+echo "---> Install gems"
+bundle install --path vendor/bundle
+
+cat >> "${layers_dir}/launch.toml" <<EOL
+[[processes]]
+type = "web"
+command = "bundle exec rails s -b 0.0.0.0"
+EOL

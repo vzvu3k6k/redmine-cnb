@@ -1,0 +1,9 @@
+api = "0.2"
+
+[buildpack]
+id = "io.github.vzvu3k6k.redmine"
+name = "Redmine Buildpack"
+version = "0.0.1"
+
+[[stacks]]
+id = "io.github.vzvu3k6k.redmine"

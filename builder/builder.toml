@@ -1,0 +1,12 @@
+[[buildpacks]]
+id = "io.github.vzvu3k6k.redmine"
+uri = "../"
+
+[[order]]
+[[order.group]]
+id = "io.github.vzvu3k6k.redmine"
+
+[stack]
+id = "io.github.vzvu3k6k.redmine"
+run-image = "vzvu3k6k/redmine-cnb-run:latest"
+build-image = "vzvu3k6k/redmine-cnb-build:latest"

@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  app:
+    image: my-app
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres@postgres/redmine
+  postgres:
+    image: circleci/postgres:11-alpine-ram
+    expose:
+      - "5432"
