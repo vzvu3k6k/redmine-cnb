@@ -1,0 +1,2 @@
+# http://www.redmine.org/issues/32223
+gem 'sprockets', '~> 3.7.2'

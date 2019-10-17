@@ -1,0 +1,30 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        depth: 1
+    - name: Setup pack
+      run: |
+        curl -L https://github.com/buildpack/pack/releases/download/v0.4.1/pack-v0.4.1-linux.tgz | tar zx -C /tmp
+        sudo ln -sf /tmp/pack /usr/bin/pack
+        pack version
+    - name: Build stack images
+      run: ./stacks/build-stack.sh
+    - name: Create a builder
+      run: pack create-builder redmine-builder:latest --builder-config ./builder/builder.toml
+    - name: Run a buildpack
+      run: |
+        pack build plain --builder redmine-builder:latest \
+          --buildpack io.github.vzvu3k6k.redmine \
+          --path examples/plain
+    - name: Test a built image
+      run: |
+        docker run --rm plain bin/rails about
