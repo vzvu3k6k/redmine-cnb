@@ -9,6 +9,9 @@ jobs:
 
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
 
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
     steps:
     - uses: actions/checkout@v1
       with:
@@ -21,12 +24,18 @@ jobs:
     - name: Build stack images
       run: ./stacks/build-stack.sh
     - name: Create a builder
-      run: pack create-builder redmine-builder:latest --builder-config ./builder/builder.toml
+      run: pack create-builder $DOCKER_USERNAME/redmine-cnb:latest --builder-config ./builder/builder.toml
     - name: Run a buildpack
       run: |
-        pack build plain --builder redmine-builder:latest \
+        pack build plain --builder $DOCKER_USERNAME/redmine-cnb:latest \
           --buildpack io.github.vzvu3k6k.redmine \
           --path examples/plain
     - name: Test a built image
       run: |
         docker run --rm plain bin/rails about
+    - name: Push a builder image
+      run: |
+        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+        docker push $DOCKER_USERNAME/redmine-cnb:latest
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
